@@ -39,6 +39,8 @@ class GuildPlayer:
         self.voice_client: VoiceClient | None = None
         self.canal_texto: discord.abc.Messageable | None = None
         self.mensagem_atual: discord.Message | None = None
+        self._musica_atual: Musica | None = None
+        self._thumbnail_atual: str | None = None
 
     def conectado(self) -> bool:
         return self.voice_client is not None and self.voice_client.is_connected()
@@ -79,6 +81,13 @@ class GuildPlayer:
         if musica is not None:
             await self._iniciar_reproducao(musica)
         return musica
+
+    async def embaralhar(self) -> bool:
+        if not self.fila.proximas:
+            return False
+        self.fila.embaralhar()
+        await self._atualizar_mensagem_atual()
+        return True
 
     async def parar(self) -> None:
         self.fila.limpar()
@@ -121,6 +130,17 @@ class GuildPlayer:
         except discord.HTTPException:
             pass
         self.mensagem_atual = None
+        self._musica_atual = None
+        self._thumbnail_atual = None
+
+    async def _atualizar_mensagem_atual(self) -> None:
+        if self.mensagem_atual is None or self._musica_atual is None:
+            return
+        embed = self._montar_embed(self._musica_atual, self._thumbnail_atual)
+        try:
+            await self.mensagem_atual.edit(embed=embed)
+        except discord.HTTPException:
+            pass
 
     def _montar_embed(self, musica: Musica, thumbnail: str | None) -> discord.Embed:
         embed = discord.Embed(
@@ -169,6 +189,9 @@ class GuildPlayer:
             asyncio.run_coroutine_threadsafe(self._proxima_automatica(), self._loop)
 
         self.voice_client.play(player, after=ao_terminar)
+
+        self._musica_atual = musica
+        self._thumbnail_atual = resolvido.thumbnail
 
         if self.canal_texto is not None:
             embed = self._montar_embed(musica, resolvido.thumbnail)

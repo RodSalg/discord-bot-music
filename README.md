@@ -105,6 +105,7 @@ uv run python music.py
 | `/proximo` | - | Skips the current song and plays the next one in the queue |
 | `/anterior` | - | Goes back and plays the previous song (uses the history of already-played songs) |
 | `/fila` | - | Shows the next songs in the queue (up to 10, plus a remaining count) |
+| `/embaralhar` | - | Shuffles the order of the upcoming songs in the queue |
 | `/stop` | - | Stops the current song, clears the queue and disconnects the bot from the voice channel |
 
 Basic flow:
@@ -112,13 +113,14 @@ Basic flow:
 1. Join a voice channel on the server.
 2. Type `/play`, fill in the `musica` parameter with a link or a song name, and send it.
 3. Run `/play` again with another link/name to add more songs to the queue - they play one after another automatically.
-4. Use `/proximo` to skip forward, `/anterior` to go back, `/fila` to see what is coming up, and `/stop` to end and clear everything.
+4. Use `/proximo` to skip forward, `/anterior` to go back, `/fila` to see what is coming up, `/embaralhar` to shuffle it, and `/stop` to end and clear everything.
 
 Every time a song starts playing (via `/play`, `/proximo`, `/anterior`, or because the previous one just ended), the bot sends a "Now playing" embed in the channel with the song's thumbnail, who requested it, the next 10 songs in the queue (configurable via the `QTD_PROXIMAS_EXIBIDAS` constant in `musica/config.py`), and a row of buttons:
 
 - previous - goes back to the previous song
 - pause/resume - pauses and resumes the current song (the icon switches automatically)
 - next - skips to the next song in the queue
+- shuffle - shuffles the upcoming songs in the queue and refreshes the queue preview in the embed
 - stop - stops everything, clears the queue and disconnects the bot
 
 When a new song starts, the buttons on the previous message are disabled - only the most recent message stays interactive.

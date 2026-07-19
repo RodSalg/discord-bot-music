@@ -1,3 +1,4 @@
+import random
 from collections import deque
 from collections.abc import Iterable
 from dataclasses import dataclass, field
@@ -13,6 +14,11 @@ class FilaDeReproducao:
 
     def adicionar(self, musicas: Iterable[Musica]) -> None:
         self.proximas.extend(musicas)
+
+    def embaralhar(self) -> None:
+        itens = list(self.proximas)
+        random.shuffle(itens)
+        self.proximas = deque(itens)
 
     def avancar(self) -> Musica | None:
         if self.atual is not None:

@@ -94,6 +94,20 @@ class MusicCog(commands.Cog):
         player = self.bot.obter_player(interaction.guild.id)
         await interaction.response.send_message(player.mensagem_fila(QTD_PROXIMAS_EXIBIDAS), ephemeral=True)
 
+    @app_commands.command(name="embaralhar", description="Embaralha a ordem das próximas músicas da fila")
+    async def embaralhar(self, interaction: Interaction) -> None:
+        if not interaction.guild:
+            return
+
+        player = self.bot.obter_player(interaction.guild.id)
+        embaralhou = await player.embaralhar()
+
+        if not embaralhou:
+            await interaction.response.send_message("A fila está vazia, não tem o que embaralhar.", ephemeral=True)
+            return
+
+        await interaction.response.send_message("Fila embaralhada.", ephemeral=True)
+
     @app_commands.command(name="stop", description="Para a música, limpa a fila e desconecta o bot do canal de voz")
     async def stop(self, interaction: Interaction) -> None:
         if not interaction.guild:

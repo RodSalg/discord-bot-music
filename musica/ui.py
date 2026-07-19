@@ -33,6 +33,11 @@ class PlayerControls(discord.ui.View):
         await interaction.response.defer()
         await self._player.pular()
 
+    @discord.ui.button(emoji="🔀", style=discord.ButtonStyle.secondary)
+    async def embaralhar(self, interaction: Interaction, _botao: discord.ui.Button) -> None:
+        await interaction.response.defer()
+        await self._player.embaralhar()
+
     @discord.ui.button(emoji="⏹️", style=discord.ButtonStyle.danger)
     async def parar(self, interaction: Interaction, _botao: discord.ui.Button) -> None:
         await interaction.response.defer()
