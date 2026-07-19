@@ -57,6 +57,17 @@ class MusicCog(commands.Cog):
         else:
             await interaction.followup.send(f"{len(musicas)} músicas adicionadas à fila.")
 
+    @play.autocomplete("musica")
+    async def autocomplete_musica(self, interaction: Interaction, atual: str) -> list[app_commands.Choice[str]]:
+        if len(atual) < 2 or atual.startswith("http"):
+            return []
+
+        sugestoes = await self.bot.youtube.sugestoes(atual)
+        return [
+            app_commands.Choice(name=titulo[:100], value=url[:100])
+            for titulo, url in sugestoes
+        ]
+
     @app_commands.command(name="proximo", description="Pula para a próxima música da fila")
     async def proximo(self, interaction: Interaction) -> None:
         if not interaction.guild:

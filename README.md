@@ -115,6 +115,8 @@ Basic flow:
 3. Run `/play` again with another link/name to add more songs to the queue - they play one after another automatically.
 4. Use `/proximo` to skip forward, `/anterior` to go back, `/fila` to see what is coming up, `/embaralhar` to shuffle it, and `/stop` to end and clear everything.
 
+While typing a song name (not a link) in the `musica` parameter of `/play`, Discord shows up to 10 YouTube search suggestions to pick from, once you have typed at least 2 characters.
+
 Every time a song starts playing (via `/play`, `/proximo`, `/anterior`, or because the previous one just ended), the bot sends a "Now playing" embed in the channel with the song's thumbnail, who requested it, the next 10 songs in the queue (configurable via the `QTD_PROXIMAS_EXIBIDAS` constant in `musica/config.py`), and a row of buttons:
 
 - previous - goes back to the previous song
