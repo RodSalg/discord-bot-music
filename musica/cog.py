@@ -119,6 +119,44 @@ class MusicCog(commands.Cog):
 
         await interaction.response.send_message("Fila embaralhada.", ephemeral=True)
 
+    @app_commands.command(name="inverter", description="Inverte a ordem das próximas músicas da fila")
+    async def inverter(self, interaction: Interaction) -> None:
+        if not interaction.guild:
+            return
+
+        player = self.bot.obter_player(interaction.guild.id)
+        inverteu = await player.inverter()
+
+        if not inverteu:
+            await interaction.response.send_message("A fila está vazia, não tem o que inverter.", ephemeral=True)
+            return
+
+        await interaction.response.send_message("Fila invertida.", ephemeral=True)
+
+    @app_commands.command(name="lista", description="Mostra a fila completa de músicas")
+    async def lista(self, interaction: Interaction) -> None:
+        if not interaction.guild:
+            return
+
+        player = self.bot.obter_player(interaction.guild.id)
+        await interaction.response.send_message(player.mensagem_lista_completa(), ephemeral=True)
+
+    @app_commands.command(name="pular_para", description="Pula direto para uma música específica da fila")
+    @app_commands.describe(posicao="Número da música na fila (veja com /lista)")
+    async def pular_para(self, interaction: Interaction, posicao: int) -> None:
+        if not interaction.guild:
+            return
+
+        player = self.bot.obter_player(interaction.guild.id)
+        await interaction.response.defer(ephemeral=True)
+        musica = await player.pular_para(posicao)
+
+        if musica is None:
+            await interaction.followup.send("Não tem música nessa posição da fila.")
+            return
+
+        await interaction.followup.send(f"Pulando para: {musica.nome}")
+
     @app_commands.command(name="stop", description="Para a música, limpa a fila e desconecta o bot do canal de voz")
     async def stop(self, interaction: Interaction) -> None:
         if not interaction.guild:

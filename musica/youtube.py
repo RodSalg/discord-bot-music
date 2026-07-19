@@ -77,4 +77,5 @@ class YoutubeService:
 
         titulo = dados.get("title") or url
         thumbnail = dados.get("thumbnail")
-        return FaixaResolvida(stream_url=stream_url, titulo=titulo, thumbnail=thumbnail)
+        duracao = dados.get("duration")
+        return FaixaResolvida(stream_url=stream_url, titulo=titulo, thumbnail=thumbnail, duracao=duracao)
