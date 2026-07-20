@@ -1,3 +1,4 @@
+import random
 from collections import deque
 from collections.abc import Iterable
 from dataclasses import dataclass, field
@@ -14,11 +15,27 @@ class FilaDeReproducao:
     def adicionar(self, musicas: Iterable[Musica]) -> None:
         self.proximas.extend(musicas)
 
+    def embaralhar(self) -> None:
+        itens = list(self.proximas)
+        random.shuffle(itens)
+        self.proximas = deque(itens)
+
+    def inverter(self) -> None:
+        self.proximas.reverse()
+
     def avancar(self) -> Musica | None:
         if self.atual is not None:
             self.historico.append(self.atual)
         self.atual = self.proximas.popleft() if self.proximas else None
         return self.atual
+
+    def pular_para(self, posicao: int) -> Musica | None:
+        if posicao < 1 or posicao > len(self.proximas):
+            return None
+        resultado: Musica | None = None
+        for _ in range(posicao):
+            resultado = self.avancar()
+        return resultado
 
     def retroceder(self) -> Musica | None:
         if not self.historico:

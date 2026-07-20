@@ -9,6 +9,9 @@ MUSICAS_PATH = Path(__file__).resolve().parent.parent / "musicas.json"
 MAX_ITENS_PLAYLIST = 50
 QTD_PROXIMAS_EXIBIDAS = 10
 
+COR_TOCANDO = 0x8B5CF6
+COR_PAUSADO = 0x6B7280
+
 # resolve a música (link direto pro ffmpeg), uma de cada vez, só quando ela for tocar
 YTDL_OPCOES: dict[str, Any] = {
     "format": "bestaudio/best",

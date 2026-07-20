@@ -41,6 +41,30 @@ class YoutubeService:
 
         return musicas
 
+    async def sugestoes(self, termo: str, quantidade: int = 10) -> list[tuple[str, str]]:
+        if not termo:
+            return []
+
+        loop = asyncio.get_event_loop()
+        consulta = f"ytsearch{quantidade}:{termo}"
+        dados = await loop.run_in_executor(None, lambda: self._ytdl_flat.extract_info(consulta, download=False))
+        if not dados:
+            return []
+
+        resultados: list[tuple[str, str]] = []
+        entradas: list[Any] = dados.get("entries") or []
+        for entrada_bruta in entradas:
+            if not entrada_bruta:
+                continue
+            entrada: dict[str, Any] = dict(entrada_bruta)
+            url = normalizar_url(entrada)
+            if not url:
+                continue
+            titulo = entrada.get("title") or url
+            resultados.append((titulo, url))
+
+        return resultados
+
     async def resolver(self, url: str) -> FaixaResolvida | None:
         loop = asyncio.get_event_loop()
         dados = await loop.run_in_executor(None, lambda: self._ytdl.extract_info(url, download=False))
@@ -53,4 +77,5 @@ class YoutubeService:
 
         titulo = dados.get("title") or url
         thumbnail = dados.get("thumbnail")
-        return FaixaResolvida(stream_url=stream_url, titulo=titulo, thumbnail=thumbnail)
+        duracao = dados.get("duration")
+        return FaixaResolvida(stream_url=stream_url, titulo=titulo, thumbnail=thumbnail, duracao=duracao)

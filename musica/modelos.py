@@ -13,3 +13,4 @@ class FaixaResolvida:
     stream_url: str
     titulo: str
     thumbnail: str | None = None
+    duracao: int | None = None

@@ -105,6 +105,10 @@ uv run python music.py
 | `/proximo` | - | Skips the current song and plays the next one in the queue |
 | `/anterior` | - | Goes back and plays the previous song (uses the history of already-played songs) |
 | `/fila` | - | Shows the next songs in the queue (up to 10, plus a remaining count) |
+| `/lista` | - | Shows the full queue, every song numbered |
+| `/embaralhar` | - | Shuffles the order of the upcoming songs in the queue |
+| `/inverter` | - | Reverses the order of the upcoming songs in the queue |
+| `/pular_para` | `posicao` - the song's number, as shown by `/lista` | Jumps straight to that song in the queue, skipping everything before it (the skipped songs are kept in history, so `/anterior` can still walk back through them) |
 | `/stop` | - | Stops the current song, clears the queue and disconnects the bot from the voice channel |
 
 Basic flow:
@@ -112,14 +116,26 @@ Basic flow:
 1. Join a voice channel on the server.
 2. Type `/play`, fill in the `musica` parameter with a link or a song name, and send it.
 3. Run `/play` again with another link/name to add more songs to the queue - they play one after another automatically.
-4. Use `/proximo` to skip forward, `/anterior` to go back, `/fila` to see what is coming up, and `/stop` to end and clear everything.
+4. Use `/proximo` to skip forward, `/anterior` to go back, `/fila` or `/lista` to see what is coming up, `/embaralhar` or `/inverter` to reorder it, `/pular_para` to jump straight to a specific song, and `/stop` to end and clear everything.
 
-Every time a song starts playing (via `/play`, `/proximo`, `/anterior`, or because the previous one just ended), the bot sends a "Now playing" embed in the channel with the song's thumbnail, who requested it, the next 10 songs in the queue (configurable via the `QTD_PROXIMAS_EXIBIDAS` constant in `musica/config.py`), and a row of buttons:
+While typing a song name (not a link) in the `musica` parameter of `/play`, Discord shows up to 10 YouTube search suggestions to pick from, once you have typed at least 2 characters.
 
-- previous - goes back to the previous song
-- pause/resume - pauses and resumes the current song (the icon switches automatically)
-- next - skips to the next song in the queue
-- stop - stops everything, clears the queue and disconnects the bot
+Every time a song starts playing (via `/play`, `/proximo`, `/anterior`, or because the previous one just ended), the bot sends a "Now playing" embed in the channel: the song title links directly to the YouTube video, with the song's thumbnail, who requested it, a timestamp, a text-based progress bar with elapsed/total time (when the song's duration is known), the next 10 songs in the queue (configurable via the `QTD_PROXIMAS_EXIBIDAS` constant in `musica/config.py`), and two rows of labeled buttons:
+
+Row 1:
+- Shuffle - shuffles the upcoming songs in the queue and refreshes the queue preview in the embed
+- Previous - goes back to the previous song
+- Pause/Resume - pauses and resumes the current song (the icon and label switch automatically, and the embed's color and header switch between "Now playing" and "Paused")
+- Next - skips to the next song in the queue
+- Stop - stops everything, clears the queue and disconnects the bot
+
+Row 2:
+- -10s / +10s - jump backward or forward 10 seconds in the current song (configurable via `SALTO_TEMPO` in `musica/ui.py`)
+- Invert - reverses the order of the upcoming songs
+- List - shows the full queue (same as `/lista`)
+- Go to - opens a small form to type a song number and jump straight to it (same as `/pular_para`)
+
+The embed's accent color and header text (`COR_TOCANDO` / `COR_PAUSADO` in `musica/config.py`) change depending on whether playback is active or paused. While a song is playing, the progress bar refreshes on its own every 10 seconds (`INTERVALO_ATUALIZACAO_PROGRESSO` in `musica/player.py`); it also updates immediately after a rewind/fast-forward or a jump. There is no draggable seek bar - Discord messages don't support that kind of interactive control, so seeking is done through the -10s/+10s buttons or the "Go to" form instead, which restart ffmpeg at the new position.
 
 When a new song starts, the buttons on the previous message are disabled - only the most recent message stays interactive.
 
